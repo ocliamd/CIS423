@@ -82,4 +82,59 @@ class DropColumnsTransformer(BaseEstimator, TransformerMixin):
     result = self.transform(X)
     return result
   
+class Sigma3Transformer(BaseEstimator, TransformerMixin):
+  def __init__(self, target_column):  
+    self.target_column = target_column
+
+  #fill in rest below
+  def fit(self, X, y = None):
+    print(f"Warning: MappingTransformer.fit does nothing.")
+    return X
+  
+  def transform(self, X):
+    assert isinstance(X, pd.core.frame.DataFrame), f'DropColumnsTransformer.transform expected Dataframe but got {type(X)} instead.'
+    value = X.copy()
+    minb, maxb = self.compute_3sigma_boundaries(value, self.target_column)
+    if minb < value[self.target_column].min():
+      minb = value[self.target_column].min()
+    value[self.target_column] = value[f'{self.target_column}'].clip(lower=minb, upper=maxb)
+    return value
+
+  def compute_3sigma_boundaries(self, df, column_name):
+    #compute mean of column - look for method
+    m = df[column_name].mean()
+    #compute std of column - look for method
+    sigma = df[column_name].std()  
+    return  (m-3*sigma, m+3*sigma) #(lower bound, upper bound)
+
+  def fit_transform(self, X, y = None):
+    result = self.transform(X)
+    return result
+  
+class TukeyTransformer(BaseEstimator, TransformerMixin):
+  def __init__(self, target_column, fence='outer'):
+    assert fence in ['inner', 'outer']
+    self.target_column = target_column
+    self.fence = fence
+    
+  def transform(self, X):
+    assert isinstance(X, pd.core.frame.DataFrame), f'DropColumnsTransformer.transform expected Dataframe but got {type(X)} instead.'
+    value = X.copy()
+    q1 = value[self.target_column].quantile(0.25)
+    q3 = value[self.target_column].quantile(0.75)
+    iqr = q3-q1 
+    outer_low = q1-(3*iqr)
+    outer_high = q3+(3*iqr)
+    inner_low = q1-(1.5*iqr)
+    inner_high = q3+(1.5*iqr)
+    if self.fence == 'outer':
+      value[self.target_column] = value[f'{self.target_column}'].clip(lower=outer_low, upper=outer_high)
+    else:
+      value[self.target_column] = value[f'{self.target_column}'].clip(lower=inner_low, upper=inner_high)
+    return value
+
+  def fit_transform(self, X, y = None):
+    result = self.transform(X)
+    return result
+  
   
