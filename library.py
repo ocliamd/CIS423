@@ -111,7 +111,7 @@ class Sigma3Transformer(BaseEstimator, TransformerMixin):
     result = self.transform(X)
     return result
   
- class TukeyTransformer(BaseEstimator, TransformerMixin):
+class TukeyTransformer(BaseEstimator, TransformerMixin):
   def __init__(self, target_column, fence='outer'):
     assert fence in ['inner', 'outer']
     self.target_column = target_column
