@@ -118,7 +118,7 @@ class Sigma3Transformer(BaseEstimator, TransformerMixin):
     self.fence = fence
     
   def transform(self, X):
-    assert isinstance(X, pd.core.frame.DataFrame), f'DropColumnsTransformer.transform expected Dataframe but got {type(X)} instead.'
+    #assert isinstance(X, pd.core.frame.DataFrame), f'DropColumnsTransformer.transform expected Dataframe but got {type(X)} instead.'
     value = X.copy()
     q1 = value[self.target_column].quantile(0.25)
     q3 = value[self.target_column].quantile(0.75)
