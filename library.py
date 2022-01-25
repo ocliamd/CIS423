@@ -81,7 +81,32 @@ class DropColumnsTransformer(BaseEstimator, TransformerMixin):
   def fit_transform(self, X, y = None):
     result = self.transform(X)
     return result
-  
+class TukeyTransformer(BaseEstimator, TransformerMixin):
+  def __init__(self, target_column, fence='outer'):
+    assert fence in ['inner', 'outer']
+    self.target_column = target_column
+    self.fence = fence
+    
+  def transform(self, X):
+    assert isinstance(X, pd.core.frame.DataFrame), f'DropColumnsTransformer.transform expected Dataframe but got {type(X)} instead.'
+    value = X.copy()
+    q1 = value[self.target_column].quantile(0.25)
+    q3 = value[self.target_column].quantile(0.75)
+    iqr = q3-q1 
+    outer_low = q1-(3*iqr)
+    outer_high = q3+(3*iqr)
+    inner_low = q1-(1.5*iqr)
+    inner_high = q3+(1.5*iqr)
+    if self.fence == 'outer':
+      value[self.target_column] = value[f'{self.target_column}'].clip(lower=outer_low, upper=outer_high)
+    else:
+      value[self.target_column] = value[f'{self.target_column}'].clip(lower=inner_low, upper=inner_high)
+    return value
+
+  def fit_transform(self, X, y = None):
+    result = self.transform(X)
+    return result
+    
 class Sigma3Transformer(BaseEstimator, TransformerMixin):
   def __init__(self, target_column):  
     self.target_column = target_column
@@ -111,30 +136,5 @@ class Sigma3Transformer(BaseEstimator, TransformerMixin):
     result = self.transform(X)
     return result
   
-class TukeyTransformer(BaseEstimator, TransformerMixin):
-  def __init__(self, target_column, fence='outer'):
-    assert fence in ['inner', 'outer']
-    self.target_column = target_column
-    self.fence = fence
-    
-  def transform(self, X):
-    #assert isinstance(X, pd.core.frame.DataFrame), f'DropColumnsTransformer.transform expected Dataframe but got {type(X)} instead.'
-    value = X.copy()
-    q1 = value[self.target_column].quantile(0.25)
-    q3 = value[self.target_column].quantile(0.75)
-    iqr = q3-q1 
-    outer_low = q1-(3*iqr)
-    outer_high = q3+(3*iqr)
-    inner_low = q1-(1.5*iqr)
-    inner_high = q3+(1.5*iqr)
-    if self.fence == 'outer':
-      value[self.target_column] = value[f'{self.target_column}'].clip(lower=outer_low, upper=outer_high)
-    else:
-      value[self.target_column] = value[f'{self.target_column}'].clip(lower=inner_low, upper=inner_high)
-    return value
 
-  def fit_transform(self, X, y = None):
-    result = self.transform(X)
-    return result
-  
   
