@@ -81,6 +81,7 @@ class DropColumnsTransformer(BaseEstimator, TransformerMixin):
   def fit_transform(self, X, y = None):
     result = self.transform(X)
     return result
+  
 class TukeyTransformer(BaseEstimator, TransformerMixin):
   def __init__(self, target_column, fence='outer'):
     assert fence in ['inner', 'outer']
@@ -136,5 +137,27 @@ class Sigma3Transformer(BaseEstimator, TransformerMixin):
     result = self.transform(X)
     return result
   
+class MinMaxTransformer(BaseEstimator, TransformerMixin):
+  def __init__(self):
+    self.count = 0
 
+  #fill in rest below
+  def fit(self, X, y = None):
+    print(f"Warning: MappingTransformer.fit does nothing.")
+    return X
+
+  def transform(self, X):
+    value = X.copy()
+    for i in value[:]:
+      mi = value[i].min()
+      mx = value[i].max()
+      denom = (mx-mi)
+      value[i] -= mi
+      value[i] /= denom
+    return value
+
+
+  def fit_transform(self, X, y = None):
+    result = self.transform(X)
+    return result
   
