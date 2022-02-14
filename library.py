@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+from sklearn.impute import KNNImputer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegressionCV
+from sklearn.metrics import f1_score #, balanced_accuracy_score, precision_score, recall_score
 
 #This class maps values in a column, numeric or categorical.
 class MappingTransformer(BaseEstimator, TransformerMixin):
@@ -160,8 +164,7 @@ class MinMaxTransformer(BaseEstimator, TransformerMixin):
   def fit_transform(self, X, y = None):
     result = self.transform(X)
     return result
-  
-from sklearn.impute import KNNImputer
+ 
 
 class KNNTransformer(BaseEstimator, TransformerMixin):
   def __init__(self,n_neighbors=5, weights="uniform", add_indicator=False):
@@ -186,9 +189,7 @@ class KNNTransformer(BaseEstimator, TransformerMixin):
     result = self.transform(X)
     return result
   
-  
-from sklearn.linear_model import LogisticRegressionCV
-from sklearn.metrics import f1_score #, balanced_accuracy_score, precision_score, recall_score
+
 model = LogisticRegressionCV(max_iter=5000)
 
 def find_random_state(df, labels, n=200):
@@ -206,8 +207,6 @@ def find_random_state(df, labels, n=200):
   rs_value = sum(var)/len(var)
   abs_val = var - rs_value
   return np.array(abs(abs_val)).argmin() 
-
-from sklearn.pipeline import Pipeline
 
 titanic_transformer = Pipeline(steps=[
     ('drop', DropColumnsTransformer(['Age', 'Gender', 'Class', 'Joined', 'Married',  'Fare'], 'keep')),
