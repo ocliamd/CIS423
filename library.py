@@ -3,8 +3,12 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.impute import KNNImputer
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from sklearn.model_selection import train_test_split
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import HalvingGridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+
 
 
 # This class maps values in a column, numeric or categorical.
@@ -291,6 +295,7 @@ def titanic_setup(titanic_table, transformer=titanic_transformer, rs=88, ts=.2):
 def customer_setup(customer_table, transformer=customer_transformer, rs=107, ts=.2):
   return dataset_setup(customer_table.drop(columns='Rating'), customer_table['Rating'].to_list(), transformer, rs=rs, ts=ts)
 
+
 def threshold_results(thresh_list, actuals, predicted):
   result_df = pd.DataFrame(
       columns=['threshold', 'precision', 'recall', 'f1', 'accuracy'])
@@ -318,4 +323,3 @@ def halving_search(model, grid, x_train, y_train, factor=3, scoring='roc_auc'):
   )
 
   return halving_cv.fit(x_train, y_train)
-
