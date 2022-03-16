@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import LogisticRegressionCV
 
 
 
