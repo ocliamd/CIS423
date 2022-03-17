@@ -319,3 +319,18 @@ def halving_search(model, grid, x_train, y_train, factor=3, scoring='roc_auc'):
   )
   grid_result = halving_cv.fit(x_train, y_train)
   return grid_result
+
+loan_transformer = Pipeline(steps=[
+    ('drop', DropColumnsTransformer(['Education'], 'drop')),
+    ('drop3', DropColumnsTransformer(['Loan_ID'], 'drop')),
+    ('ohe', OHETransformer(target_column='Property_Area')),
+    ('gender', MappingTransformer('Gender', {'Male': 0, 'Female': 1})),
+    ('married', MappingTransformer('Married', {'No': 0, 'Yes': 1})),
+    ('self_employed', MappingTransformer('Self_Employed', {'No': 0, 'Yes': 1})),
+    ('dependents', MappingTransformer('Dependents', {'0': 0, '1': 1, '3+': 3})),
+    ('income', TukeyTransformer('ApplicantIncome', 'outer')),
+    ('coapplicant_income', TukeyTransformer('CoapplicantIncome', 'outer')),
+    ('loan_amount', TukeyTransformer('LoanAmount', 'outer')),
+    ('LAT', TukeyTransformer('Loan_Amount_Term', 'outer')), 
+    ('imputer', KNNTransformer())
+    ], verbose=True)
